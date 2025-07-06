@@ -27,20 +27,21 @@ def init_db():
         ''')
         connection.commit()
 
-# -- General Dashboard Endpoint --
-    def dashboard():
-        with get_db() as connection:
-            books = connection.execute('SELECT * FROM books ORDER BY id DESC').fetchall()
-            highest_rated = connection.execute('SELECT * FROM books ORDER BY rating DESC LIMIT 10').fetchall()
-        
-        total_books = len(books)
-        reading_goal = 24
-        
-        return render_template('dashboard.html', 
-                            books=books,
-                            highest_rated=highest_rated,
-                            total_books=total_books,
-                            reading_goal=reading_goal)
+# -- General Dashboard Endpoint -- (FIXED: Added missing route decorator)
+@app.route('/')
+def dashboard():
+    with get_db() as connection:
+        books = connection.execute('SELECT * FROM books ORDER BY id DESC').fetchall()
+        highest_rated = connection.execute('SELECT * FROM books ORDER BY rating DESC LIMIT 10').fetchall()
+    
+    total_books = len(books)
+    reading_goal = 24
+    
+    return render_template('dashboard.html', 
+                        books=books,
+                        highest_rated=highest_rated,
+                        total_books=total_books,
+                        reading_goal=reading_goal)
 
 # -- Add Book Endpoint --
 @app.route('/add', methods=['GET', 'POST'])
