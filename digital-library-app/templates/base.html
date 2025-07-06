@@ -14,15 +14,18 @@
         .btn-danger { background: #dc3545; color: white; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; }
-        .form-group input { width: 100%; padding: 8px; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; }
         .alert { padding: 10px; margin-bottom: 15px; }
         .alert-success { background: #d4edda; color: #155724; }
+        .stats { background: #f8f9fa; padding: 15px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
     <div class="nav">
         <a href="{{ url_for('dashboard') }}">Dashboard</a>
         <a href="{{ url_for('add_book') }}">Add Book</a>
+        <a href="{{ url_for('update_book_selection') }}">Update Book</a>
+        <a href="{{ url_for('delete_book_selection') }}">Delete Book</a>
     </div>
 
     <div class="container">

@@ -28,19 +28,19 @@ def init_db():
         connection.commit()
 
 # -- General Dashboard Endpoint --
-@app.route('/')
-def dashboard():
-    with get_db() as connection:
-        books = connection.execute('SELECT * FROM books ORDER BY id DESC').fetchall()
-    
-    total_books = len(books)
-    reading_goal = 24
-    recent_books = books[:5]
-    
-    return render_template('dashboard.html', 
-                         books=recent_books,
-                         total_books=total_books,
-                         reading_goal=reading_goal)
+    def dashboard():
+        with get_db() as connection:
+            books = connection.execute('SELECT * FROM books ORDER BY id DESC').fetchall()
+            highest_rated = connection.execute('SELECT * FROM books ORDER BY rating DESC LIMIT 10').fetchall()
+        
+        total_books = len(books)
+        reading_goal = 24
+        
+        return render_template('dashboard.html', 
+                            books=books,
+                            highest_rated=highest_rated,
+                            total_books=total_books,
+                            reading_goal=reading_goal)
 
 # -- Add Book Endpoint --
 @app.route('/add', methods=['GET', 'POST'])
@@ -63,7 +63,14 @@ def add_book():
         return redirect(url_for('dashboard')) 
     return render_template('add_book.html')
 
-# -- Delete Book Endpoint
+# -- Delete Book Selection Endpoint --
+@app.route('/delete')
+def delete_book_selection():
+    with get_db() as connection:
+        books = connection.execute('SELECT * FROM books ORDER BY title').fetchall()
+    return render_template('delete_book.html', books=books)
+
+# -- Delete Book Endpoint --
 @app.route('/delete/<int:book_id>', methods=['POST'])
 def delete_book(book_id):
     with get_db() as connection:
@@ -72,6 +79,13 @@ def delete_book(book_id):
     
     flash('Book deleted')
     return redirect(url_for('dashboard'))
+
+# -- Update Book Selection Endpoint --
+@app.route('/update')
+def update_book_selection():
+    with get_db() as connection:
+        books = connection.execute('SELECT * FROM books ORDER BY title').fetchall()
+    return render_template('update_book_selection.html', books=books)
 
 # -- Update Book Endpoint --
 @app.route('/update/<int:book_id>', methods=['GET', 'POST'])

@@ -1,40 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Digital Library</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
-        .nav { background: #333; padding: 10px; margin-bottom: 20px; }
-        .nav a { color: white; text-decoration: none; margin-right: 15px; }
-        .nav a:hover { text-decoration: underline; }
-        .container { max-width: 800px; margin: 0 auto; }
-        .card { border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; }
-        .btn { padding: 8px 15px; margin: 5px; text-decoration: none; }
-        .btn-primary { background: #007bff; color: white; }
-        .btn-danger { background: #dc3545; color: white; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; }
-        .form-group input { width: 100%; padding: 8px; }
-        .alert { padding: 10px; margin-bottom: 15px; }
-        .alert-success { background: #d4edda; color: #155724; }
-    </style>
-</head>
-<body>
-    <div class="nav">
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('add_book') }}">Add Book</a>
-    </div>
+{% extends "base.html" %}
 
-    <div class="container">
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-success">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+{% block content %}
+<h1>My Digital Library</h1>
 
-        {% block content %}{% endblock %}
-    </div>
-</body>
-</html>
+<div class="stats">
+    <p><strong>Total Books:</strong> {{ total_books }}</p>
+    <p><strong>Reading Goal:</strong> {{ total_books }}/{{ reading_goal }}</p>
+</div>
+
+<h2>All Books</h2>
+{% if books %}
+    {% for book in books %}
+        <div class="card">
+            <h3>{{ book.title }}</h3>
+            <p><strong>Author:</strong> {{ book.author }}</p>
+            <p><strong>Pages:</strong> {{ book.pages }}</p>
+            <p><strong>Rating:</strong> {{ book.rating }}/7</p>
+            <p><strong>Date Completed:</strong> {{ book.date_completed }}</p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No books added yet. <a href="{{ url_for('add_book') }}">Add your first book!</a></p>
+{% endif %}
+
+<h2>Highest Rated Books</h2>
+{% if highest_rated %}
+    {% for book in highest_rated %}
+        <div class="card">
+            <h3>{{ book.title }}</h3>
+            <p><strong>Author:</strong> {{ book.author }}</p>
+            <p><strong>Rating:</strong> {{ book.rating }}/7</p>
+            <p><strong>Date Completed:</strong> {{ book.date_completed }}</p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No books to show yet.</p>
+{% endif %}
+{% endblock %}
