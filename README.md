@@ -1,6 +1,6 @@
-My Digital Library App
+**MY DIGITAL LIBRARY APP**
 
-Description
+# Description
 
 A small-scale simple web app with the following features.
 
@@ -10,37 +10,34 @@ A small-scale simple web app with the following features.
 - Deleting Books: Removing books from your digital library
 - Reading Goal Progress: Read more - track towards a yearly goal of 24 books
 
-Technologies Used
+# Requirements
 
+- Python 3.7+
+- Flask 2.3.3
+- SQLite (included with Python)
 
-Requirements
-
-Python 3.7+
-Flask 2.3.3
-SQLite (included with Python)
-
-Install Instructions
+# Install Instructions
 
 - Clone or download the project files
 - Create a virtual environment:
-    bashpython -m venv venv
+    'bashpython -m venv venv'
 
     source venv/bin/activate
-    On Windows: venv\Scripts\activate
+    'On Windows: venv\Scripts\activate'
 
 - Install dependencies:
-    bashpip install -r requirements.txt
+    'bashpip install -r requirements.txt'
 
 - Create the templates directory and add HTML files:
-    bashmkdir templates
+    'bashmkdir templates'
 
 - Run the application:
-    bashpython app.py
+    'bashpython app.py'
 
 - Access the application:
-    Open your browser and go to http://localhost:5000
+    'Open your browser and go to http://localhost:5000'
 
-Usage Instructions for API's
+# Usage Instructions for API's
 
 GET / - Dashboard homepage
 GET /add - Add new book form
@@ -50,11 +47,11 @@ POST /update/<id> - Submit book updates
 POST /delete/<id> - Delete book
 
 
-Jenkins Instructions
+# Jenkins Instructions
 
 TO BE ALTERED LATER
 
-Development Notes
+# Development Notes
 
 - SQLite is used as a simple DB tool
 - Database is created automatically on initialization
