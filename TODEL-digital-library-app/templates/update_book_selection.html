@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Select Book to Update</h1>
+
+{% if books %}
+    {% for book in books %}
+        <div class="card">
+            <h3>{{ book.title }}</h3>
+            <p><strong>Author:</strong> {{ book.author }}</p>
+            <p><strong>Pages:</strong> {{ book.pages }}</p>
+            <p><strong>Rating:</strong> {{ book.rating }}/7</p>
+            <p><strong>Date Completed:</strong> {{ book.date_completed }}</p>
+            <a href="{{ url_for('update_book', book_id=book.id) }}" class="btn btn-primary">Update This Book</a>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No books to update. <a href="{{ url_for('add_book') }}">Add a book first!</a></p>
+{% endif %}
+
+<a href="{{ url_for('dashboard') }}" class="btn">Back to Dashboard</a>
+{% endblock %}

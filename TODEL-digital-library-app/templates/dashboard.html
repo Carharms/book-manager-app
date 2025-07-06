@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>My Digital Library</h1>
+
+<div class="stats">
+    <p><strong>Total Books:</strong> {{ total_books }}</p>
+    <p><strong>Reading Goal:</strong> {{ total_books }}/{{ reading_goal }}</p>
+</div>
+
+<h2>All Books</h2>
+{% if books %}
+    {% for book in books %}
+        <div class="card">
+            <h3>{{ book.title }}</h3>
+            <p><strong>Author:</strong> {{ book.author }}</p>
+            <p><strong>Pages:</strong> {{ book.pages }}</p>
+            <p><strong>Rating:</strong> {{ book.rating }}/7</p>
+            <p><strong>Date Completed:</strong> {{ book.date_completed }}</p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No books added yet. <a href="{{ url_for('add_book') }}">Add your first book!</a></p>
+{% endif %}
+
+<h2>Highest Rated Books</h2>
+{% if highest_rated %}
+    {% for book in highest_rated %}
+        <div class="card">
+            <h3>{{ book.title }}</h3>
+            <p><strong>Author:</strong> {{ book.author }}</p>
+            <p><strong>Rating:</strong> {{ book.rating }}/7</p>
+            <p><strong>Date Completed:</strong> {{ book.date_completed }}</p>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>No books to show yet.</p>
+{% endif %}
+{% endblock %}
