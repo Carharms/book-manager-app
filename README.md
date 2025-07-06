@@ -1,4 +1,4 @@
-**MY DIGITAL LIBRARY APP**
+# **MY DIGITAL LIBRARY APP**
 
 # Description
 
@@ -20,36 +20,35 @@ A small-scale simple web app with the following features.
 
 - Clone or download the project files
 - Create a virtual environment:
-    'bashpython -m venv venv'
-
-    source venv/bin/activate
-    'On Windows: venv\Scripts\activate'
+> bashpython -m venv venv'
+> source venv/bin/activate
+> On Windows: venv\Scripts\activate
 
 - Install dependencies:
-    'bashpip install -r requirements.txt'
+> bashpip install -r requirements.txt
 
 - Create the templates directory and add HTML files:
-    'bashmkdir templates'
+> bashmkdir templates
 
 - Run the application:
-    'bashpython app.py'
+> bashpython app.py
 
 - Access the application:
-    'Open your browser and go to http://localhost:5000'
+> Open your browser and go to http://localhost:5000
 
 # Usage Instructions for API's
 
-GET / - Dashboard homepage
-GET /add - Add new book form
-POST /add - Submit new book
-GET /update/<id> - Edit book form
-POST /update/<id> - Submit book updates
-POST /delete/<id> - Delete book
+> GET / - Dashboard homepage
+> GET /add - Add new book form
+> POST /add - Submit new book
+> GET /update/<id> - Edit book form
+> POST /update/<id> - Submit book updates
+> POST /delete/<id> - Delete book
 
 
 # Jenkins Instructions
 
-TO BE ALTERED LATER
+- TO BE ALTERED LATER
 
 # Development Notes
 
