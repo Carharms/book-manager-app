@@ -5,6 +5,10 @@ pipeline {
     // Step 1a-c. Triggers
     // These are the essential triggers, no others as would result in unnecessary runs - competing with step 1
     triggers {
+        // Poll SCM every 5 minutes for changes
+        //pollSCM('H/5 * * * *')
+        // 
+        // Removal of the below to operate on the local machine without webhooks - ASK IN CLASS?
         githubPush()
         githubPull()
     }
