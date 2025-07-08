@@ -2,84 +2,85 @@
 pipeline {
     agent any
     
-    // Step 1. Triggers
-    // Are other triggers needed?
+    // Step 1a-c. Triggers
+    // These are the essential triggers, no others as would result in unnecessary runs - competing with step 1
     triggers {
-        // Poll SCM every x minutes for changes
-        // pollSCM('H/x * * * *')
-        // Use webhook triggers - does the below work?
         githubPush()
+        githubPull()
     }
     
+    // 
     environment {
         PYTHONPATH = "${WORKSPACE}"
         COVERAGE_MIN = '60'
     }
-    // Step 2. Environments
+    // Step 2a. Checkout source code from repository
     stages {
         stage('Initialization') {
             steps {
-                echo 'Building.. Grabbing SCM'
+                echo 'Building.. checking out source code'
                 checkout scm
                 
-                // Display build information
                 script {
                     echo "Build Number: ${env.BUILD_NUMBER}"
                     echo "Branch: ${env.BRANCH_NAME ?: 'main'}"
-                    echo "Workspace: ${env.WORKSPACE}"
                 }
             }
         }
         
-        // 2. ENVIRONMENT SETUP - Install dependencies
+        // Step 2b. Install and configure correct runtime environment
+        // Step 2c. Install project dependencies on appropriate package managers
+        // Step 2d. Setup required environment variables and config files
         stage('Setup Environment') {
             steps {
                 echo 'Building.. setting up Python environment'
                 
-                // Create virtual environment and install dependencies
                 bat '''
                     if exist "venv" rmdir /s /q venv
                     python -m venv venv
-                    
                     call venv\\Scripts\\activate.bat
                     pip install -r requirements.txt
-                    pip install flake8 black coverage pytest pytest-cov
-                    pip list
+                    pip install ruff black coverage pytest pytest-cov
                 '''
             }
         }
         
-        // 3. Code quality checks
+        // 3a. Configure and run linkting tools for flake 8
+        // Should I do linting with Ruff - highly recommended?
         stage('Code Quality') {
             steps {
-                echo 'Code Quality - Linting'
+                echo 'Code Quality.. running Ruff Linting'
                 
                 bat '''
-                    call venv\\Scripts\\activate.bat
-                    flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics --output-file=flake8-report.txt
-                    flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics --output-file=flake8-full-report.txt
-                    
-                    RESULTS
-                    type flake8-report.txt
-                    type flake8-full-report.txt
+                     call venv\\Scripts\\activate.bat
+                    ruff check . --output-format=text > ruff-report.txt 2>&1 || exit /b 0
+                    type ruff-report.txt
                 '''
                 
-                // Archive linting reports
-                archiveArtifacts artifacts: 'flake8-*.txt', allowEmptyArchive: true
                 
-                // Erros and Warning
-                recordIssues(
-                    enabledForFailure: true,
-                    aggregatingResults: true,
-                    tools: [flake8(pattern: 'flake8-full-report.txt')]
-                )
+                // 3c. Configure quality gates if standards aren't met
+                script {
+                    def lintResult = bat(
+                        script: '''
+                            call venv\\Scripts\\activate.bat
+                            ruff check . --quiet
+                        ''',
+                        returnStatus: true
+                    )
+                    
+                    archiveArtifacts artifacts: 'ruff-report.txt', allowEmptyArchive: true
+                    
+                    if (lintResult != 0) {
+                        error("Linting failed. Please fix the issues reported by Ruff.")
+                    }
+                }
             }
         }
         
-        // 3. CODE QUALITY CHECKS - Code formatting
+        // 3b. Implement code formatting check tool for Black
         stage('Code Quality - Formatting') {
             steps {
-                echo 'Code Quality.. Format.'
+                echo 'Code Quality.. checking formatting with Black.'
                 
                 script {
                     def formatResult = bat(
@@ -91,9 +92,8 @@ pipeline {
                         returnStatus: true
                     )
                     
-                    // Archive formatting report
-                    archiveArtifacts artifacts: 'black-report.txt', allowEmptyArchive: true
-                    
+                    // 3c. Configure quality gates if standards aren't met
+                    archiveArtifacts artifacts: 'black-report.txt', allowEmptyArchive: true 
                     if (formatResult != 0) {
                         bat 'type black-report.txt'
                         error("Code formatting check failed. Run 'black .' to fix formatting issues.")
@@ -104,45 +104,36 @@ pipeline {
             }
         }
         
-        // 4. TESTING - Run unit tests with coverage
+        // 4a. Execute all unit tests with appropriate testing framework
         stage('Testing') {
             steps {
-                echo 'Running unit tests with coverage...'
+                echo 'Testing.. running unit tests with coverage...'
                 
                 bat '''
                     call venv\\Scripts\\activate.bat
-                    
-                    REM Run tests with coverage
-                    coverage run -m pytest test_app.py -v --tb=short --junitxml=test-results.xml
-                    
-                    REM Generate coverage reports
+                    coverage run -m pytest test_app.py -v --junitxml=test-results.xml
                     coverage report --fail-under=%COVERAGE_MIN%
                     coverage html --directory=htmlcov
                     coverage xml --output=coverage.xml
-                    
-                    REM Display coverage summary
-                    coverage report
                 '''
             }
             
+            // 4b. Generate comprehensive test coverage reports
             post {
                 always {
-                    // Publish test results
                     publishTestResults(
                         testResultsPattern: 'test-results.xml',
                         mergeResults: true,
                         failureOnError: true
                     )
                     
-                    // Publish coverage reports
                     publishHTML([
                         allowMissing: false,
                         alwaysLinkToLastBuild: true,
                         keepAll: true,
                         reportDir: 'htmlcov',
                         reportFiles: 'index.html',
-                        reportName: 'Coverage Report',
-                        reportTitles: 'Test Coverage'
+                        reportName: 'Coverage Report'
                     ])
                     
                     // Archive test artifacts
@@ -151,64 +142,38 @@ pipeline {
             }
         }
         
-        // 5. BUILD PROCESS - Build and verify application
+        // 5a. Compile and build the application
         stage('Build Application') {
             steps {
                 echo 'Building Flask application...'
                 
                 bat '''
                     call venv\\Scripts\\activate.bat
-                    
-                    REM Test application imports
                     python -c "from app import app; print('Flask app imports successfully')"
-                    
-                    REM Test database initialization
                     python -c "from app import init_db; init_db(); print('Database initializes successfully')"
                     
-                    REM Create build info file
                     echo Build Number: %BUILD_NUMBER% > build-info.txt
                     echo Build Date: %DATE% %TIME% >> build-info.txt
                     echo Branch: %BRANCH_NAME% >> build-info.txt
-                    
-                    REM List project files
-                    dir /b > project-files.txt
                 '''
             }
         }
         
-        // 5. BUILD PROCESS - Verify build artifacts
+        // 5b. Verify that all build artifacts are successfully generated
         stage('Verify Build Artifacts') {
             steps {
                 echo 'Verifying build artifacts...'
                 
                 bat '''
-                    call venv\\Scripts\\activate.bat
-                    
-                    REM Check required files exist
-                    if not exist "app.py" (
-                        echo app.py not found
-                        exit /b 1
-                    )
-                    
-                    if not exist "requirements.txt" (
-                        echo  requirements.txt not found
-                        exit /b 1
-                    )
-                    
-                    if not exist "templates" (
-                        echo  templates directory not found
-                        exit /b 1
-                    )
+                    if not exist "app.py" exit /b 1
+                    if not exist "requirements.txt" exit /b 1
+                    if not exist "templates" exit /b 1
                     
                     echo All required files present
-                    echo Build completed successfully
-                    
-                    REM Display build info
                     type build-info.txt
                 '''
                 
-                // Archive build artifacts
-                archiveArtifacts artifacts: 'build-info.txt,project-files.txt', allowEmptyArchive: true
+                archiveArtifacts artifacts: 'build-info.txt', allowEmptyArchive: true
             }
         }
     }
@@ -216,54 +181,16 @@ pipeline {
     // Post-build actions
     post {
         always {
-            echo '🧹 Cleaning up...'
-            
-            // Clean up virtual environment
-            bat '''
-                if exist "venv" rmdir /s /q venv
-            '''
+            echo 'Cleaning up..'
+            bat 'if exist "venv" rmdir /s /q venv'
         }
         
         success {
-            echo '🎉 Pipeline completed successfully!'
-            
-            // Send success notification (optional)
-            emailext(
-                subject: "Build Success: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
-                body: """
-                    Build completed successfully!
-                    
-                    Job: ${env.JOB_NAME}
-                    Build Number: ${env.BUILD_NUMBER}
-                    Build URL: ${env.BUILD_URL}
-                    
-                    All tests passed and code quality checks succeeded.
-                """,
-                to: "${env.CHANGE_AUTHOR_EMAIL ?: 'your-email@example.com'}"
-            )
+            echo 'Pipeline completed successfully!'
         }
         
         failure {
-            echo 'Pipeline failed!'
-            
-            // Send failure notification (optional)
-            emailext(
-                subject: "Build Failed: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
-                body: """
-                    Build failed!
-                    
-                    Job: ${env.JOB_NAME}
-                    Build Number: ${env.BUILD_NUMBER}
-                    Build URL: ${env.BUILD_URL}
-                    
-                    Please check the build logs for details.
-                """,
-                to: "${env.CHANGE_AUTHOR_EMAIL ?: 'your-email@example.com'}"
-            )
-        }
-        
-        unstable {
-            echo 'Build is unstable!'
+            echo 'Pipeline failed'
         }
     }
 }
