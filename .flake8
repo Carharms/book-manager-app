@@ -1,0 +1,14 @@
+[flake8]
+max-line-length = 127
+max-complexity = 10
+format = %(path)s:%(row)d:%(col)d: %(code)s %(text)s
+ignore = 
+    E203,
+    W503,
+exclude = 
+    venv,
+    __pycache__,
+    .git,
+    *.pyc,
+    .pytest_cache,
+    htmlcov

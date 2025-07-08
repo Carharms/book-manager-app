@@ -48,7 +48,14 @@ A small-scale simple web app with the following features.
 
 # Jenkins Instructions
 
-- TO BE ALTERED LATER
+Plugins
+- Git
+- Pipeline
+- OWASP MArkup Formatter Plugin
+- Coverage
+- Warnings
+- FIND OTHERS?
+
 
 # Development Notes
 
