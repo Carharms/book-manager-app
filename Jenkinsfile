@@ -13,7 +13,7 @@ pipeline {
         githubPull()
     }
     
-    // 
+    // te
     environment {
         PYTHONPATH = "${WORKSPACE}"
         COVERAGE_MIN = '60'
