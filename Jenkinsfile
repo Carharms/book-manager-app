@@ -115,39 +115,34 @@ pipeline {
         stage('Testing') {
             steps {
                 echo 'Testing.. running unit tests with coverage...'
-                
+
                 bat '''
                     call venv\\Scripts\\activate.bat
+                    
+                    REM Run tests with coverage and generate JUnit XML
                     coverage run -m pytest test_app.py -v --junitxml=test-results.xml
+                    
+                    REM Generate coverage reports (text, HTML, and Cobertura XML)
                     coverage report --fail-under=%COVERAGE_MIN%
                     coverage html --directory=htmlcov
-                    coverage xml --output=coverage.xml
+                    coverage xml REM Removed '--output=coverage.xml' as it's not a valid option
                 '''
             }
             
-            // 4b. Generate comprehensive test coverage reports
+            // 4b. Generate comprehensive test coverage reports (post-stage actions)
             post {
                 always {
-                    publishTestResults(
+                    // Publish JUnit test results for analysis in Jenkins UI
+                    junit(
                         testResults: 'test-results.xml',
-                        mergeResults: true,
-                        failureOnError: true
+                        allowEmptyResults: true    
                     )
                     
-                    publishHTML([
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: 'htmlcov',
-                        reportFiles: 'index.html',
-                        reportName: 'Coverage Report'
-                    ])
-                    
-                    // Archive test artifacts
                     archiveArtifacts artifacts: 'test-results.xml,coverage.xml,htmlcov/**/*', allowEmptyArchive: true
                 }
             }
         }
+
         
         // 5a. Compile and build the application
         stage('Build Application') {
