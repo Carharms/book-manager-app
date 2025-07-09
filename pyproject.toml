@@ -1,9 +1,8 @@
 [tool.ruff]
-# Simple configuration for graduate project
-[tool.ruff.lint]
-select = ["E", "F", "W", "I"]  # Errors, pyflakes, warnings, imports
-ignore = ["E501"]  # Line too long (Black handles this)
 line-length = 88
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
 
 [tool.black]
 line-length = 88
