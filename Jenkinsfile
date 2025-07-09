@@ -10,7 +10,7 @@ pipeline {
         // 
         // Removal of the below to operate on the local machine without webhooks - ASK IN CLASS?
         githubPush()
-        githubPull()
+        pollSCM('H/5 * * * *')
     }
     
     // te
