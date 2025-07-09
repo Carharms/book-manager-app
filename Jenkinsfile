@@ -129,7 +129,7 @@ pipeline {
             post {
                 always {
                     publishTestResults(
-                        testResultsPattern: 'test-results.xml',
+                        testResults: 'test-results.xml',
                         mergeResults: true,
                         failureOnError: true
                     )
@@ -202,7 +202,7 @@ pipeline {
 
             // Publish JUnit test results for analysis in Jenkins UI.
             junit(
-                testResultsPattern: 'test-results.xml',
+                testResults: 'test-results.xml',
                 allowEmptyResults: true
             )
 
@@ -228,7 +228,7 @@ pipeline {
 
             // Publish JUnit test results even on failure, crucial for debugging.
             junit(
-                testResultsPattern: 'test-results.xml',
+                testResults: 'test-results.xml',
                 allowEmptyResults: true
             )
             // Publish HTML coverage report on failed reasons
@@ -248,7 +248,7 @@ pipeline {
         unstable {
             echo 'Build is unstable!'
             junit(
-                testResultsPattern: 'test-results.xml',
+                testResults: 'test-results.xml',
                 allowEmptyResults: true
             )
             publishHTML([
