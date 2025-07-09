@@ -84,29 +84,32 @@ pipeline {
         // 3b. Implement code formatting check tool for Black
         stage('Code Quality - Formatting') {
             steps {
-                echo 'Code Quality.. checking formatting with Black.'
-                
-                script {
-                    def formatResult = bat(
-                        script: '''
-                            call venv\\Scripts\\activate.bat
-                            black --check --diff --color . > black-report.txt 2>&1
-                            exit /b %ERRORLEVEL%
-                        ''',
-                        returnStatus: true
-                    )
-                    
-                    // 3c. Configure quality gates if standards aren't met
-                    archiveArtifacts artifacts: 'black-report.txt', allowEmptyArchive: true 
-                    if (formatResult != 0) {
-                        bat 'type black-report.txt'
-                        error("Code formatting check failed. Run 'black .' to fix formatting issues.")
-                    } else {
-                        echo "Code formatting check passed"
-                    }
+        echo 'Code Quality.. fixing formatting with Black.' // Changed echo message
+        
+        script {
+            def formatResult = bat(
+                script: '''
+                    call venv\\Scripts\\activate.bat
+                    black --color . > black-report.txt 2>&1
+                    exit /b %ERRORLEVEL%
+                ''',
+                returnStatus: true
+            )
+            
+            // 3c. Configure quality gates if standards aren't met
+            archiveArtifacts artifacts: 'black-report.txt', allowEmptyArchive: true 
+            
+            if (formatResult != 0) {
+                bat 'type black-report.txt'
+
+                error("Black attempted to fix formatting issues, but encountered an error. Check 'black-report.txt' for details.")
+            } else {
+                echo "Code formatting fixed or already correct."
                 }
             }
         }
+    }
+    
         
         // 4a. Execute all unit tests with appropriate testing framework
         stage('Testing') {
