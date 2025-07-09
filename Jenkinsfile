@@ -115,7 +115,6 @@ pipeline {
         stage('Testing') {
             steps {
                 echo 'Testing.. running unit tests with coverage...'
-
                 bat '''
                     call venv\\Scripts\\activate.bat
                     
@@ -125,7 +124,7 @@ pipeline {
                     REM Generate coverage reports (text, HTML, and Cobertura XML)
                     coverage report --fail-under=%COVERAGE_MIN%
                     coverage html --directory=htmlcov
-                    coverage xml REM Removed '--output=coverage.xml' as it's not a valid option
+                    coverage xml
                 '''
             }
             
