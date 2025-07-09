@@ -1,17 +1,8 @@
 [tool.ruff]
-# Exclude formatting rules to avoid conflicts with Black
-select = ["E", "F", "W", "C90", "I", "N", "UP", "B", "C90"]
-ignore = [
-    "E501",
-    "W503", 
-]
-
-line-length = 88  # Match Black's default
-target-version = "py38"
-
-[tool.ruff.mccabe]
-max-complexity = 10
+# Simple configuration for graduate project
+select = ["E", "F", "W", "I"]  # Errors, pyflakes, warnings, imports
+ignore = ["E501"]  # Line too long (Black handles this)
+line-length = 88
 
 [tool.black]
 line-length = 88
-target-version = ['py38']
