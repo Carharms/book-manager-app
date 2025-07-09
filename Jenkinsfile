@@ -41,7 +41,7 @@ pipeline {
                 
                 bat '''
                     if exist "venv" rmdir /s /q venv
-                    python -m venv venv
+                    C:\Users\Carte\AppData\Local\Programs\Python\Python313\python.exe -m venv venv
                     call venv\\Scripts\\activate.bat
                     pip install -r requirements.txt
                     pip install ruff black coverage pytest pytest-cov
