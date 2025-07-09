@@ -56,8 +56,8 @@ pipeline {
                 echo 'Code Quality.. running Ruff Linting'
                 
                 bat '''
-                     call venv\\Scripts\\activate.bat
-                    ruff check . --output-format=text > ruff-report.txt 2>&1 || exit /b 0
+                    call venv\\Scripts\\activate.bat
+                    ruff check . --output-format=full > ruff-report.txt 2>&1 || exit /b 0
                     type ruff-report.txt
                 '''
                 
