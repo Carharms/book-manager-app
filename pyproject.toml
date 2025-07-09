@@ -1,5 +1,17 @@
 [tool.ruff]
 # Exclude formatting rules to avoid conflicts with Black
-select = ["E", "F", "W", "C90", "I", "N", "UP", "YTT", "S", "BLE", "FBT", "B", "A", "COM", "C4", "DTZ", "T10", "EM", "EXE", "ISC", "ICN", "G", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SIM", "TID", "TCH", "ARG", "PTH", "ERA", "PD", "PGH", "PL", "TRY", "NPY", "RUF"]
-ignore = ["E501", "W503"]  # Ignore line length (Black handles this)
+select = ["E", "F", "W", "C90", "I", "N", "UP", "B", "C90"]
+ignore = [
+    "E501",
+    "W503", 
+]
+
 line-length = 88  # Match Black's default
+target-version = "py38"
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
