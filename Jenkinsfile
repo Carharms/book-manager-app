@@ -6,14 +6,11 @@ pipeline {
     // These are the essential triggers, no others as would result in unnecessary runs - competing with step 1
     triggers {
         // Poll SCM every 5 minutes for changes
-        //pollSCM('H/5 * * * *')
-        // 
-        // Removal of the below to operate on the local machine without webhooks - ASK IN CLASS?
-        githubPush()
         pollSCM('H/5 * * * *')
+        // Trigger build on each Github push
+        githubPush()
     }
     
-    // te
     environment {
         PYTHONPATH = "${WORKSPACE}"
         COVERAGE_MIN = '60'
@@ -49,8 +46,7 @@ pipeline {
             }
         }
         
-        // 3a. Configure and run linkting tools for flake 8
-        // Should I do linting with Ruff - highly recommended?
+        // 3a. Configure and run Ruff linting
         stage('Code Quality') {
             steps {
                 echo 'Code Quality.. running Ruff Linting'
@@ -84,7 +80,7 @@ pipeline {
         // 3b. Implement code formatting check tool for Black
         stage('Code Quality - Formatting') {
             steps {
-        echo 'Code Quality.. fixing formatting with Black.' // Changed echo message
+        echo 'Code Quality.. fixing formatting with Black.'
         
         script {
             def formatResult = bat(
@@ -109,7 +105,6 @@ pipeline {
             }
         }
     }
-    
         
         // 4a. Execute all unit tests with appropriate testing framework
         stage('Testing') {
@@ -182,7 +177,7 @@ pipeline {
     // Post-build actions
     post {
         always {
-            // Cleaning up workspace
+            // Clean up workspace
             echo 'Cleaning up workspace'
 
             // Clean up virtual environment
@@ -220,7 +215,7 @@ pipeline {
 
         unstable {
             // Build is unstable
-            echo 'Build is unstable!'
+            echo 'Build unstable!'
             // Publish test results
             junit(
                 testResults: 'test-results.xml',

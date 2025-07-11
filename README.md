@@ -15,6 +15,12 @@ A small-scale simple web app with the following features.
 - Python 3.7+
 - Flask 2.3.3
 - SQLite (included with Python)
+- Ruff 0.12.0
+- Black 23.7.0
+- Coverage 7.4.0
+- Pytest 7.4.0
+- Pytest-cov 4.1.0
+
 
 # Install Instructions
 
@@ -54,7 +60,6 @@ Plugins
 - OWASP MArkup Formatter Plugin
 - Coverage
 - Warnings
-- FIND OTHERS?
 
 
 # Development Notes

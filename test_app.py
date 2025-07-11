@@ -11,8 +11,9 @@ class BookManagerTestCase(unittest.TestCase):
     def setUp(self):
         # Create a temporary database file for testing
         self.db_fd, app.config["DATABASE"] = tempfile.mkstemp()
-        app.config["TESTING"] = True  # Enable testing mode for Flask app
-        self.app = app.test_client()  # Create a test client to simulate requests
+        # Enable testing mode for Flask app
+        app.config["TESTING"] = True
+        self.app = app.test_client()
 
         # Initialize the database within the application context
         with app.app_context():
@@ -121,11 +122,10 @@ class BookManagerTestCase(unittest.TestCase):
                 "rating": "5",
                 "date_completed": "2025-03-15",
             },
-            follow_redirects=True, # Follow the redirect after successful update
+            follow_redirects=True,
         )
 
         self.assertEqual(response.status_code, 200)
-        # Corrected assertion: The actual message is "Library updated"
         self.assertIn(b"Library updated", response.data)
 
     def test_update_book_redirect(self):
